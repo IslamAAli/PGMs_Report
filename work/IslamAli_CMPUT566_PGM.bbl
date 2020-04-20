@@ -4,6 +4,9 @@
 A.~Maleki and T.~Do, ``Cs229: Machine learning, lecture notes.'' Online Lecture
   Notes, Department of Computer Science, Stanford University, 2020.
 
+\bibitem{mitchell1997machine}
+T.~M. Mitchell {\em et~al.}, ``Machine learning,'' 1997.
+
 \bibitem{koller2009probabilistic}
 D.~Koller and N.~Friedman, {\em Probabilistic graphical models: principles and
   techniques}.
@@ -18,12 +21,15 @@ F.~Pernkopf, R.~Peharz, and S.~Tschiatschek, ``Introduction to probabilistic
 C.~M. Bishop, {\em Pattern recognition and machine learning}.
 \newblock springer, 2006.
 
-\bibitem{mitchell1997machine}
-T.~M. Mitchell {\em et~al.}, ``Machine learning,'' 1997.
-
 \bibitem{kimArticle}
 A.~Kim, ``Conditional independence — the backbone of bayesian networks.''
   \url{https://towardsdatascience.com/conditional-independence-the-backbone-of-bayesian-networks-85710f1b35b},
   Oct. 2019.
+
+\bibitem{beretta2018learning}
+S.~Beretta, M.~Castelli, I.~Gon{\c{c}}alves, R.~Henriques, and D.~Ramazzotti,
+  ``Learning the structure of bayesian networks: A quantitative assessment of
+  the effect of different algorithmic schemes,'' {\em Complexity}, vol.~2018,
+  2018.
 
 \end{thebibliography}

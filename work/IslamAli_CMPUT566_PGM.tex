@@ -301,7 +301,7 @@ In all cases, the learning process will depend on the the specific task and the 
 \subsection{Learning The Conditional Distribution Tables of BNs}
 In the case where the structure of the network is defined, meaning that for each random variable/node in the BN $X_i$; the parents $Parent(X_i)$ and descendants $Desc(X_i)$ of this random variables $X_i$ are defined and the conditional independences are known. In this case, we assume partial observability of conditional distribution tables associated with each node. In this section, we discuss the Gradient Ascent Algorithm that can be used to learn the entries of the tables given the structure and partial observability. From an abstract point of view, the algorithm depends on searching in hypotheses $H$ and tries to maximize $P(D|h)$, where $D$ is the available training data, and $h$ is one hypothesis in the hypothesis space. More formally, we need to define the following terms:
 \begin{itemize}
-\item $P(D|h)$: is the probability of the training data given a certain hypothesis
+\item $P(D|h)$: is the probability of the training data given a certain hypothesis. It is also denoted by $P_h (D)$ for simplicity.
 \item $d \in D$: is a data sample inside the training data, the training data $D$ is of size $M$.
 \item $w_{ijk}$: is an entry in one of the conditional distribution tables associated with each random variable $Y_i$.
 \item $Y_{i}$: is the random variable in hand to which the table is being calculated.
@@ -309,22 +309,143 @@ In the case where the structure of the network is defined, meaning that for each
 \item $y_{ij}$: is one value of possible values for random variable $Y_i$.
 \item $u_{ik}$: is one value of possible values for parent $U_k$ or random variable $Y_i$.
 \end{itemize}
+The objective is to maximize $P(D|h)$ for each of the tables entries for each node in the network. The maximization is achieved by calculating the gradient at each $w_ijk$ for the $lnP_h(D)$. The objective is to proof the following relation:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{P(Y_i = y_{ij}, U_i=u_{ik} | d)}{w_{ijk}}
+\end{equation}
+Assuming the data $d \in D $ is $iid$:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \frac{\partial}{w_{ijk}} ln \prod_{d \in D} P_h(d)
+\end{equation}
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{\partial ln P_h(D)}{\partial w_{ijk}}
+\end{equation}
+The partial derivative of $ln$ is given by:
+\begin{equation}
+\frac{\partial ln f(x)}{\partial x} = \frac{1}{f(x)}. \frac{\partial f(x)}{\partial x}
+\end{equation}
+Then, the equation will be:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . \frac{\partial P_h(D)}{\partial w_{ijk}}
+\end{equation}
+In order to determine the gradient, $P(D|h)$ needs to be represented using $y_{ij}$ and $u_{ik}$ as follows:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . \frac{\partial}{\partial w_{ijk}} \sum_{j^{'},k^{'}} P_h(d|y_{ij^{'}}, u_{ik^{'}})P_h(y_{ij^{'}}, u_{ik^{'}})
+\end{equation}
+Following the product rule, we can further expand the equation as follows:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . \frac{\partial}{\partial w_{ijk}} \sum_{j^{'},k^{'}} P_h(d|y_{ij^{'}}, u_{ik^{'}})P_h(y_{ij^{'}}| u_{ik^{'}})P_h(u_{ik^{'}})
+\end{equation}
+The summation is done over $j^{'}$ and $k^{'}$ as they represent all entries in the network, however, for the value to be non-zero, the following conditions must hold:
+\begin{equation}
+j^{'} = j \;\;\;\;\;\; k^{'}=k
+\end{equation}
+Using this constraint over the equation, the equation can be reduced to the following form:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . \frac{\partial}{\partial w_{ijk}} P_h(d|y_{ij}, u_{ik})P_h(y_{ij}| u_{ik})P_h(u_{ik})
+\end{equation}
+The entry $w_{ijk}$ is essentially the prob. of the random variable given its parents, and can be re-written as:
+\begin{equation}
+w_{ijk} = P_h(y_{ij}| u_{ik})
+\end{equation}
+Therefore, the gradient can be expressed as:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . \frac{\partial}{\partial w_{ijk}} P_h(d|y_{ij}, u_{ik}) w_{ijk} P_h(u_{ik})
+\end{equation}
+And the result of the partial derivative will result in excluding this term as:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} . P_h(d|y_{ij}, u_{ik}) P_h(u_{ik})
+\end{equation}
+The conditional prob. $P_h(d|y_{ij}, u_{ik})$ can be re-written by the Bayes rule as: 
+\begin{equation}
+P_h(d|y_{ij}, u_{ik}) = \frac{P_h(y_{ij}, u_{ik} |d) P_h(d)}{P_h(y_{ij}, u_{ik})}
+\end{equation}
+Plugging this relation into the gradient equation, we end up with the following relation:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{1}{P_h(D)} \frac{P_h(y_{ij}, u_{ik} |d) P_h(d)}{P_h(y_{ij}, u_{ik})} P_h(u_{ik})
+\end{equation}
+Canceling out $P_h(D)$:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{P_h(y_{ij}, u_{ik} |d)}{P_h(y_{ij}, u_{ik})} P_h(u_{ik})
+\end{equation}
+Using the relation between the joint probability and the conditional prob. we can further reduce the equation into:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{P_h(y_{ij}, u_{ik} |d)}{P_h(y_{ij}| u_{ik})}
+\end{equation}
+Using the definition of $w_{ijk} = P_h(y_{ij}| u_{ik})$, we can re-write the gradient to be:
+\begin{equation}
+\frac{\partial ln P(D|h)}{\partial w_{ijk}} = \sum_{d \in D} \frac{P_h(y_{ij}, u_{ik} |d)}{w_{ijk}}
+\end{equation}
+Which is the objective we started trying to prove. \\
 
+\subsubsection{Gradient Ascent Algorithm}
+For the learning to happen, we can use a gradient ascent algorithm that can be formed as:
+\begin{equation}
+w_{ijk} = w_{ijk} + \alpha \sum_{d \in D} \frac{P_h(y_{ij}, u_{ik} |d)}{w_{ijk}}
+\end{equation}
+Where $\alpha$ is the learning rate and is considered a hyperparameter. The main constraint that must be respected is that the values will need to be normalized in order to have all conditional probabilities to $=1$ for a certain given random variable $Y_i$, that's to satisfy the probabilities axioms mentioned earlier in this report.
 
-\subsection{Hyperparameters}
+\subsection{Learning the Structure of the BN}
+The problem of deducing the structure of the BN as well as the conditional probability tables associated with it, is considered a PN-Hard problem due to the possible configurations of networks given a certain dataset. One solution to this problem an algorithm called K2 algorithm, which is essentially doing heuristic search over alternative forms of the BN, but the algorithm assumes full observability of the training data and the relations. Other algorithms are also available, and they differ in terms of the needed observability in the training data and the trade-off made between accuracy and efficiency. Another aspect to look after in the context of learning the BN structure is the scoring function or the measure by which a certain structure can be judged compared to others.
+% ==========================================================================
 \section{Inference in PGMs}
-\section{Applications/Examples}
-\section{State-of-the-art Work}
+Inference is the process of inferring the probability distribution of a certain query variable given some observable variables in the system. The assumption here is that the structure of the network as well as the values of the conditional probability tables are all defined either before hand in the experiment setup or by learning as illustrated in the previous section. In this context we define the following sets:
+\begin{itemize}
+\item $O$: The set of observed random variables.
+\item $Q$: The set of query random variables.
+\item $H$: The set of random variables that are not one of the above.
+\end{itemize}
+Together they construct the set of random variable in BN such that:
+\begin{equation}
+X = O \cup Q \cup H
+\end{equation}
+Another condition on these sets is that they do not intersect with each other:
+\begin{equation}
+O \cap Q = Q \cap H = O \cap H = \O
+\end{equation}
+\subsection{Inference Queries in PGMs}
+Queries can have one of two types in the context of PGMS:\\ 
+
+\noindent
+\textbf{(1) Marginalization Queries:} Where the marginal distribution of a query variable is required given the observed variables, this is given by:
+\begin{equation}
+P(Q|O=o) = \frac{P(Q,O=o)}{P(O=o)}
+\end{equation}
+The joint distribution $P(Q, O=o)$ can be calculated by marginalization over the $H$ variables as follows:
+\begin{equation}
+P(Q,O=o) = \sum_{h \in val(H)} P(O=o, Q, H=h)
+\end{equation}
+While the prior can be deduced from marginalization over the $Q$ variables as follows:
+\begin{equation}
+P(O=o) = \sum_{q \in val(Q)} P(O=o, Q=q)
+\end{equation}
+
+\noindent
+\textbf{(2) Maximum A Posteriori Queries:} Where the most likely instantiation of a variable is required given some observation, and is given by:
+\begin{equation}
+P^{*} = maximize(q) \; P(Q=q |O=o)
+\end{equation}
+Which is equivalent to the maximization of the joint distribution by marginalization over the variables of $H$. The above equation can then be rewritten to be:
+\begin{equation}
+P^{*} =  maximize(q) \; \sum_{h \in val(H)} P(Q=q, O=o, H=h)
+\end{equation}
+
+\subsection{Exact vs. Approximate Inference}
+The compromise between the accuracy and efficiency of the inference step is determined based on the structure/complexity of the network and on the task itself. For instance, in real-time applications, with a loose need for best accuracy, approximate inference can be used. In some cases, exact inference is not even feasible with an increased number of variables and a complex dependencies. Variable elimination is one example of how an exact inference can be done. It replies on defining factors that contain multiple variable, then marginalizing over variables inside factors so inference results can be deduced. For approximate inference, variational methods are stated in some of the literature with not much of an illustration as the main method for approximate inference.
+% ==========================================================================
+\section{Applications of PGMs}
+PGMs are used to model uncertainty in systems and to represent conditional dependency between random variables. The application at which such a scheme can be used are countless. For instance, they can be used in speech recognition, computer vision, or expert systems. Focusing on expert systems, an expert system is defined as a system that contains a knowledge base and an inference engine, where the inference can be done based on the knowledge base. The knowledge base can evolve over time and the inference engine must take that into consideration when producing new information. BNs and more generally PGMs are used to model uncertainty in such systems. Expert systems are very popular in the medical field where diagnosis assistance is needed. For instance, inferring the probability of a certain disease given a observable symptoms is one form of such systems. Other areas, such as insurance, stock market, among many other utilize such systems for the sake of modeling uncertainty due to its efficiency and applicability. 
 \section*{Discussion}
 % ==========================================================================
 \section*{Conclusion}
 % ==========================================================================
 \nocite{cs229}
+\nocite{mitchell1997machine}
 \nocite{koller2009probabilistic}
 \nocite{pernkopf2014introduction}
 \nocite{bishop2006pattern}
-\nocite{mitchell1997machine}
 \nocite{kimArticle}
+\nocite{beretta2018learning}
 \bibliographystyle{ieeetr}
 \bibliography{refs}
 % ==========================================================================
