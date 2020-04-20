@@ -1,0 +1,29 @@
+\begin{thebibliography}{1}
+
+\bibitem{cs229}
+A.~Maleki and T.~Do, ``Cs229: Machine learning, lecture notes.'' Online Lecture
+  Notes, Department of Computer Science, Stanford University, 2020.
+
+\bibitem{koller2009probabilistic}
+D.~Koller and N.~Friedman, {\em Probabilistic graphical models: principles and
+  techniques}.
+\newblock MIT press, 2009.
+
+\bibitem{pernkopf2014introduction}
+F.~Pernkopf, R.~Peharz, and S.~Tschiatschek, ``Introduction to probabilistic
+  graphical models,'' in {\em Academic Press Library in Signal Processing},
+  vol.~1, pp.~989--1064, Elsevier, 2014.
+
+\bibitem{bishop2006pattern}
+C.~M. Bishop, {\em Pattern recognition and machine learning}.
+\newblock springer, 2006.
+
+\bibitem{mitchell1997machine}
+T.~M. Mitchell {\em et~al.}, ``Machine learning,'' 1997.
+
+\bibitem{kimArticle}
+A.~Kim, ``Conditional independence — the backbone of bayesian networks.''
+  \url{https://towardsdatascience.com/conditional-independence-the-backbone-of-bayesian-networks-85710f1b35b},
+  Oct. 2019.
+
+\end{thebibliography}
