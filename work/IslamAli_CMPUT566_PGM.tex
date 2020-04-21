@@ -51,7 +51,7 @@
 % ==========================================================================
 
 \section*{Abstract}
-Abstract goes here 
+Due to the success achieved by machine learning algorithms in a wide range of applications, the need to have models that can accommodate complex tasks and being able to infer results in an efficient way became a necessity. These complex tasks come equipped with an extended number of variables and a complex network of relations that can results in inefficient modeling in case of using conventional learning and inference models. Probabilistic Graphical Models (PGMs) represents an efficient method for dealing with such complex tasks by combining concepts from probability theory with graph theory. They depend on modeling random variables and the dependencies among them in the form of either a directional acyclic graph (in case of Bayesian Networks) or as a indirected graphs (in case of Markov Networks). The main advantage of such models is the utilization of the conditional independence property that results in an efficient structure for inference. In this report, we present a summary of PGMs and their usage in machine learning tasks with a focus on the Bayesian Networks. The report starts by giving a brief intro about the background needed for this topic. Then, The representation of PGMs, specially Bayesian Networks is presented in detail. Following that, the concepts of learning in Bayesian Networks as well as inference is discussed. The report concluded by mentioning some of the application of PGMs such as expert systems, and provided a brief discussion PGMs pros and cons.  
 
 \noindent\rule{\textwidth}{1pt}
 % ==========================================================================
@@ -103,6 +103,7 @@ P(A|B) = \frac{P(B|A)P(A)}{P(B)}
 
 \subsubsection{Random Variables, Marginal, and Joint Distributions}
 A random variable is defined by a function that assigns a value for all possible outcome of a certain measurable experiment. It is a very useful when dealing with complex and dependent relations of events where each has its own probabilistic properties. \\ 
+
 One of the associated concepts to random variables is marginal distribution. The marginal distribution of random variable $X$ is defined as the distribution over the events in which $X$ is involved, and is denoted by $P(X)$. Another concept associated with random variable is joint distributions, which is defined as the distribution over events in which two or more random variables are involved, and is denoted by $P(X,Y)$. It can also be mathematically represented by:
 \begin{equation}
 P_{XY}(x,y) = P_{XY}(y|x)P_Y(x)
@@ -131,10 +132,10 @@ A graph is a data structure that is structured from two elements that are: nodes
 \item Are cycles and loops allowed or not?
 \item What are the traversal techniques allowed?
 \end{enumerate}
-In the context of this report, nodes represent random variables while edges represent the relations/dependency/conditional relationship between random variables. Edges in this context can either be directed or undirected, and can allow loops and cycles. The following is an example of a directed graph \footnote{Image was downloaded from: \url{https://computersciencewiki.org/index.php/The_web_as_a_directed_grap}}:
+In the context of this report, nodes represent random variables while edges represent the conditional relationship between random variables. Edges in this context can either be directed or undirected, and can allow loops and cycles. The following is an example of a directed graph \footnote{Image was downloaded from: \url{https://computersciencewiki.org/index.php/The_web_as_a_directed_grap}}:
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.4\textwidth]{Directed_graph.png}
+\includegraphics[width=0.25\textwidth]{Directed_graph.png}
 \caption{Example of Directed Graph }
 \end{figure}
 % ==========================================================================
@@ -435,9 +436,15 @@ The compromise between the accuracy and efficiency of the inference step is dete
 % ==========================================================================
 \section{Applications of PGMs}
 PGMs are used to model uncertainty in systems and to represent conditional dependency between random variables. The application at which such a scheme can be used are countless. For instance, they can be used in speech recognition, computer vision, or expert systems. Focusing on expert systems, an expert system is defined as a system that contains a knowledge base and an inference engine, where the inference can be done based on the knowledge base. The knowledge base can evolve over time and the inference engine must take that into consideration when producing new information. BNs and more generally PGMs are used to model uncertainty in such systems. Expert systems are very popular in the medical field where diagnosis assistance is needed. For instance, inferring the probability of a certain disease given a observable symptoms is one form of such systems. Other areas, such as insurance, stock market, among many other utilize such systems for the sake of modeling uncertainty due to its efficiency and applicability. 
-\section*{Discussion}
+% ==========================================================================
+\section{Discussion}
+\subsection{PGMs Pros and Cons}
+As outlined multiple times during the course of this report, the pros of PGMs are mainly in the efficient representation and the utilization of the conditional independence for inference. Also, the applicability for scalability that PGMs have due to the same point of efficiency. However, during my reading in the materials available, I couldn't find any discussion of the memory requirements for maintaining a huge model, because this can be a bottleneck in some application where such availability of memory is not valid. Another point to mention is related to the learning process in BNs, specifically in the part where we need to learn the structure of the network by observable data samples. In this process, and due to the heuristic search approach adopted in the space of difference structures, the optimality of the solution is not guaranteed which means that the resulting structure may not the optimal one that can maximize $P(D|h)$.
+\subsection{PGMs vs. Deep Learning}
+Due to the network-like structure of both, the differences between them needs to be highlighted in order to get more understanding for the applicability of using any of them given a certain task. I believe the main difference is the observability of internal variables and nodes in PGMs which is not valid in case of neural networks and deep learning as all layers except for the input and output layers are considered hidden layers. However, deep learning have the ability to memorize data and relations much better than PGMs due to its structure that does not depend on random variables available in the system only. Also, the power to change internal structure based on the data in NNs gives it another advantage over PGMs where the structure can be pre-defined by domain experts. 
 % ==========================================================================
 \section*{Conclusion}
+In this report, PGMs were discussed in details. The report started by providing detailed description of PGMs representation in the case of Bayesian Networks which represents random variables and the dependency relations among them in the form of acyclic directed graph (DAG). Then, learning PGMs was discussed as well, where we presented the three cases where learning is required which are: having both the structure and the conditional probability table as known information, or having only the structure, or having neither the structure nor the conditional probability tables. Then, the derivation of a gradient ascent algorithm for determining the conditional probability tables in case of known network structure was provided. After that, concepts for exact and approximate inference was discussed briefly. Finally, the report concluded by discussing potential applications of PGMs, the pros and cons of PGMs, and the similarities and differences between PGMs and deep learning models.
 % ==========================================================================
 \nocite{cs229}
 \nocite{mitchell1997machine}
